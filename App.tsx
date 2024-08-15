@@ -1,118 +1,81 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+export default function App() {
+  const startPosition = useSharedValue({x: 0, y: 0});
+  const position = useSharedValue({x: 0, y: 0});
+  const scale = useSharedValue(1);
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+  const panGesture = Gesture.Pan()
+    .onBegin(() => console.log('onBegin'))
+    .onStart(() => console.log('onStart'))
+    .onTouchesDown(() => {
+      scale.value = withSpring(1.2);
+      console.log('onTouchesDown');
+    })
+    .onTouchesMove(() => console.log('onTouchesMove'))
+    .onUpdate(({translationX, translationY}) => {
+      console.log('onUpdate');
+      position.value = {
+        x: startPosition.value.x + translationX,
+        y: startPosition.value.y + translationY,
+      };
+    })
+    .onTouchesCancelled(() => console.log('onTouchesCancelled'))
+    .onTouchesUp(() => console.log('onTouchesUp'))
+    .onEnd(() => {
+      startPosition.value = position.value;
+      scale.value = withSpring(0);
+      console.log('onEnd');
+    })
+    .onFinalize(() => console.log('onFinalize'));
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateX: position.value.x,
+      },
+      {
+        translateY: position.value.y,
+      },
+    ],
+  }));
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
+    <GestureHandlerRootView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Animated.View style={animatedStyle}>
+          <GestureDetector gesture={panGesture}>
+            <View style={styles.box} />
+          </GestureDetector>
+        </Animated.View>
       </ScrollView>
-    </SafeAreaView>
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  box: {
+    width: 100,
+    height: 100,
+    backgroundColor: 'red',
+    borderRadius: 10,
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  content: {
+    minHeight: Dimensions.get('window').height,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
-
-export default App;

@@ -1,4 +1,4 @@
-package com.sentryflickering
+package com.GestureHandlerIssues
 
 import android.app.Application
 import com.facebook.react.PackageList

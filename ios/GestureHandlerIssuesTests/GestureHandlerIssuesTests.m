@@ -7,11 +7,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React"
 
-@interface SentryFlickeringTests : XCTestCase
+@interface GestureHandlerIssuesTests : XCTestCase
 
 @end
 
-@implementation SentryFlickeringTests
+@implementation GestureHandlerIssuesTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL (^)(UIView *view))test
 {
