@@ -34,7 +34,7 @@ export default function App() {
     .onTouchesUp(() => console.log('onTouchesUp'))
     .onEnd(() => {
       startPosition.value = position.value;
-      scale.value = withSpring(0);
+      scale.value = withSpring(1);
       console.log('onEnd');
     })
     .onFinalize(() => console.log('onFinalize'));
@@ -46,6 +46,9 @@ export default function App() {
       },
       {
         translateY: position.value.y,
+      },
+      {
+        scale: scale.value,
       },
     ],
   }));
@@ -74,7 +77,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   content: {
-    minHeight: Dimensions.get('window').height,
+    minHeight: Dimensions.get('window').height + 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
