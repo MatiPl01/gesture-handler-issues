@@ -21,6 +21,7 @@ export default function App() {
 
       dummy.value = withTiming(Math.random(), {duration: 1000}, finished => {
         if (finished) {
+          console.log('activate', Date.now());
           manager.activate();
         }
       });
